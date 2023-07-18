@@ -169,13 +169,12 @@ class KeypointAPMetric(Metric):
     """torchmetrics-like interface for the Average Precision implementation"""
 
     full_state_update = False
-
+    """
+    __init__
+    Args:
+        keypoint_threshold_distance (float): distance from ground_truth keypoint that is used to classify keypoint as TP or FP.
+    """
     def __init__(self, keypoint_threshold_distance: float, dist_sync_on_step=False):
-        """
-
-        Args:
-            keypoint_threshold_distance (float): distance from ground_truth keypoint that is used to classify keypoint as TP or FP.
-        """
 
         super().__init__(dist_sync_on_step=dist_sync_on_step)
 

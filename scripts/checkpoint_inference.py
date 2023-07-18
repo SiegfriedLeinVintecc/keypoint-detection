@@ -21,7 +21,6 @@ def local_inference(model, image: np.ndarray, device="cuda"):
     # add batch dimension
     # and move to device
     image = to_tensor(image).unsqueeze(0).to(device)
-
     # pass through model
     with torch.no_grad():
         heatmaps = model(image).squeeze(0)
@@ -50,13 +49,14 @@ if __name__ == "__main__":
 
     see benchmark.py script for how to test the influences inference speed, which is ofc determined by the model (size), the input size and your hardware.
     """
+    #checkpoint_name: str e.g. 'airo-box-manipulation/iros2022_0/model-17tyvqfk:v3'
 
-    checkpoint_name = "airo-box-manipulation/keypoint-detector-integration-test/model-q360zo4y:v29"
-    image_path = pathlib.Path("").parent / "test" / "test_dataset" / "images" / "0.png"
+    checkpoint_name = "vintecc-siegfried-lein/keypoint-detector-agriplanter/model-0ellyw1s:v7"
+    folder_path = "../../../projects/Agriplanter/AGP_PPS/data/dataset/MEURILLION/22_03_24__18_36_58_911575/"
 
     # load a wandb checkpoint
     model = get_model_from_wandb_checkpoint(checkpoint_name)
-
+    
     # do not forget to set model to eval mode!
     # this will e.g. use the running statistics for batch norm layers instead of the batch statistics.
     # this is important as inference batches are typically a lot smaller which would create too much noise.
@@ -70,7 +70,10 @@ if __name__ == "__main__":
     # format will be the same though:
     #  (height, width, channels) ints in range [0,255]
     # beware of the color channels order, it should be RGBD.
-    image = io.imread(image_path)
+    for image_path in pathlib.Path(folder_path).iterdir():
+        if image_path.is_file() and image_path.suffix == ".png":
+            image_path = pathlib.Path(image_path)
+            image = io.imread(image_path)
 
-    keypoints = local_inference(model.half(), image)
-    print(keypoints)
+            keypoints = local_inference(model, image)
+            print(keypoints)

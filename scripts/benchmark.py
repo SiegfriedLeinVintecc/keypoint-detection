@@ -38,19 +38,20 @@ if __name__ == "__main__":
     from keypoint_detection.models.detector import KeypointDetector
 
     device = "cuda:0"
-    backbone = "ConvNeXtUnet"
-    input_size = 256
+    backbone = "Unet"
+    input_width = 256
+    input_height = 256
 
     backbone = BackboneFactory.create_backbone(backbone)
-    model = KeypointDetector(1, "2 4", 3, 3e-4, backbone, [["test"]], 1, 1, 0.0, 20)
+    model = KeypointDetector(1, "2 4", 3, 4e-4, backbone, [["keypoint"]], 1, 1, 0.0, 20)
     # do not forget to set model to eval mode!
     # this will e.g. use the running statistics for batch norm layers instead of the batch statistics.
     # this is important as inference batches are typically a lot smaller which would create too much noise.
     model.eval()
     model.to(device)
 
-    sample_model_input = torch.rand(1, 3, input_size, input_size, device=device, dtype=torch.float32)
-    sample_inference_input = np.random.randint(0, 255, (input_size, input_size, 3), dtype=np.uint8)
+    sample_model_input = torch.rand(1, 3, input_width, input_height, device=device, dtype=torch.float32)
+    sample_inference_input = np.random.randint(0, 255, (input_width, input_height, 3), dtype=np.uint8)
 
     benchmark(lambda: model(sample_model_input), "plain model forward pass", profile=True)
     benchmark(

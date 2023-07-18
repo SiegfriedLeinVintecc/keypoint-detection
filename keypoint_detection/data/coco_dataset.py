@@ -132,7 +132,11 @@ class COCOKeypointsDataset(ImageDataset):
 
                 img = img_dict[annotation.image_id]
                 category = category_dict[annotation.category_id]
-                semantic_classes = category.keypoints
+                # agriplanter does not have category.keypoints
+                try:
+                    semantic_classes = category.keypoints
+                except:
+                    semantic_classes = ["keypoint"]
 
                 keypoints = annotation.keypoints
                 keypoints = self.split_list_in_keypoints(keypoints)

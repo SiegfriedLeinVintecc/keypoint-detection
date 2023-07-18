@@ -39,6 +39,12 @@ class KeypointsDataModule(pl.LightningDataModule):
             help="Absolute path to the json file that defines the test dataset according to the COCO format. \
                 If not specified, no test set evaluation will be performed at the end of training.",
         )
+        parser.add_argument(
+            "--json_dataset_img_size",
+            type=str,
+            help="addendum to your dataset folder e.g. /dataset/train.json becomes /dataset_640x640/train.json when \
+                --json_dataset_img_size set to 640x640"
+        )
 
         parser.add_argument("--augment_train", dest="augment_train", default=False, action="store_true")
         parent_parser = COCOKeypointsDataset.add_argparse_args(parent_parser)
@@ -55,12 +61,21 @@ class KeypointsDataModule(pl.LightningDataModule):
         json_validation_dataset_path: str = None,
         json_test_dataset_path=None,
         augment_train: bool = False,
+        json_dataset_img_size = None,
         **kwargs
     ):
         super().__init__()
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.augment_train = augment_train
+
+        if json_dataset_img_size:
+            json_dataset_path = json_dataset_path.replace("dataset", "dataset_"+json_dataset_img_size)
+            if json_validation_dataset_path:
+                json_validation_dataset_path = json_validation_dataset_path.replace("dataset", "dataset_"+json_dataset_img_size)
+            if json_test_dataset_path:
+                json_test_dataset_path = json_test_dataset_path.replace("dataset", "dataset_"+json_dataset_img_size)
+        print(json_dataset_path)
 
         self.train_dataset = COCOKeypointsDataset(json_dataset_path, keypoint_channel_configuration, **kwargs)
 

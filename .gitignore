@@ -3,7 +3,10 @@
 .idea/**
 .vscode/**
 
+artifacts/
+logging/
 datasets/
+data/
 **wandb/
 lightning_logs**
 **.ckpt

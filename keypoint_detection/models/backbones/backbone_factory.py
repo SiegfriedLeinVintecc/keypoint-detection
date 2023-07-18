@@ -8,11 +8,11 @@ from keypoint_detection.models.backbones.maxvit_unet import MaxVitUnet
 from keypoint_detection.models.backbones.mobilenetv3 import MobileNetV3
 from keypoint_detection.models.backbones.s3k import S3K
 from keypoint_detection.models.backbones.unet import Unet
-
+from keypoint_detection.models.backbones.testmodel import TestModel
 
 class BackboneFactory:
     # TODO: how to auto-register with __init__subclass over multiple files?
-    registered_backbone_classes: List[Backbone] = [Unet, ConvNeXtUnet, MaxVitUnet, S3K, DilatedCnn, MobileNetV3]
+    registered_backbone_classes: List[Backbone] = [Unet, ConvNeXtUnet, MaxVitUnet, S3K, DilatedCnn, MobileNetV3, TestModel]
 
     @staticmethod
     def create_backbone(backbone_type: str, **kwargs) -> Backbone:

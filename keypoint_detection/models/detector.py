@@ -92,15 +92,15 @@ class KeypointDetector(pl.LightningModule):
         max_keypoints: int,
         **kwargs,
     ):
-        """[summary]
+        # """[summary]
 
-        Args:
-            see argparse help strings for documentation.
+        # Args:
+        #     see argparse help strings for documentation.
 
-            kwargs: Pythonic catch for the other named arguments, used so that we can use a dict with ALL system hyperparameters to initialise the model from this
-                    hyperparamater configuration dict. The alternative is to add a single 'hparams' argument to the init function, but this is imo less readable.
-                    cf https://pytorch-lightning.readthedocs.io/en/stable/common/hyperparameters.html for an overview.
-        """
+        #     kwargs: Pythonic catch for the other named arguments, used so that we can use a dict with ALL system hyperparameters to initialise the model from this
+        #             hyperparamater configuration dict. The alternative is to add a single 'hparams' argument to the init function, but this is imo less readable.
+        #             cf https://pytorch-lightning.readthedocs.io/en/stable/common/hyperparameters.html for an overview.
+        # """
         super().__init__()
         ## No need to manage devices ourselves, pytorch.lightning does all of that.
         ## device can be accessed through self.device if required.

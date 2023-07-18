@@ -13,24 +13,24 @@ FileName = str
 Relativepath = str
 Url = str
 
-
-class CocoInfo(BaseModel):
+"""Not used by agriplanter"""
+"""class CocoInfo(BaseModel):
     description: str
     url: Url
     version: str
     year: int
     contributor: str
-    date_created: str
+    date_created: str"""
 
-
-class CocoLicenses(BaseModel):
+"""Not used by agriplanter"""
+"""class CocoLicenses(BaseModel):
     url: Url
     id: LicenseID
-    name: str
+    name: str"""
 
 
 class CocoImage(BaseModel):
-    license: Optional[LicenseID]
+    """license: Optional[LicenseID]"""
     file_name: Relativepath
     height: int
     width: int
@@ -38,19 +38,18 @@ class CocoImage(BaseModel):
 
 
 class CocoKeypointCategory(BaseModel):
-    supercategory: str  # should be set to "name" for root category
+    """supercategory: str"""  # should be set to "name" for root category
     id: CategoryID
     name: str
     keypoints: List[str]
-    skeleton: Optional[List[List[int]]]
+    """skeleton: Optional[List[List[int]]]"""
 
 
 class CocoKeypointAnnotation(BaseModel):
     category_id: CategoryID
     id: AnnotationID
     image_id: ImageID
-
-    num_keypoints: Optional[int]
+    """num_keypoints: Optional[int]"""
     keypoints: List[float]
 
     # TODO: add checks.
@@ -68,8 +67,8 @@ class CocoKeypoints(BaseModel):
         parsed_data = COCOKeypoints(**data)
     """
 
-    info: Optional[CocoInfo]
-    licenses: Optional[List[CocoLicenses]]
+    """info: Optional[CocoInfo]
+    licenses: Optional[List[CocoLicenses]]"""
     images: List[CocoImage]
     categories: List[CocoKeypointCategory]
     annotations: List[CocoKeypointAnnotation]

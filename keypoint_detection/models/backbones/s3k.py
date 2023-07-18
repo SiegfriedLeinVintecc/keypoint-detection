@@ -110,3 +110,28 @@ class S3K(Backbone):
 
 if __name__ == "__main__":
     print(Backbone._backbone_registry)
+
+# sizes:
+# conv1  torch.Size([4, 3, 360, 540])
+# norm1  torch.Size([4, 3, 360, 540])
+# relu  torch.Size([4, 3, 360, 540])
+# conv2  torch.Size([4, 16, 179, 269])
+# norm2 torch.Size([4, 16, 179, 269])
+# relu torch.Size([4, 16, 179, 269])
+# conv3 torch.Size([4, 32, 89, 134])
+# norm3 torch.Size([4, 32, 89, 134])
+# relu torch.Size([4, 32, 89, 134])
+# res1 torch.Size([4, 32, 89, 134])
+# res2 torch.Size([4, 32, 89, 134])
+# res3 torch.Size([4, 32, 89, 134])
+# conv4 torch.Size([4, 32, 89, 134])
+# up1 torch.Size([4, 32, 179, 269])
+# cat torch.Size([4, 48, 179, 269])
+# conv5 torch.Size([4, 32, 179, 269])
+# norm4 torch.Size([4, 32, 179, 269])
+# relu torch.Size([4, 32, 179, 269])
+# up2 torch.Size([4, 32, 360, 540])
+# cat2 torch.Size([4, 35, 360, 540])
+# conv6 torch.Size([4, 32, 360, 540])
+# norm5 torch.Size([4, 32, 360, 540])
+# relu torch.Size([4, 32, 360, 540])

@@ -20,17 +20,19 @@
             "name": "box",
             "keypoints": [
                 "box_corner0",
-                "box_corner1",
-                "box_corner2",
-                "box_corner3",
-                "flap_corner0",
-                "flap_corner1",
-                "flap_corner2",
-                "flap_corner3",
-                "flap_corner4",
-                "flap_corner5",
-                "flap_corner6",
-                "flap_corner7"
+                "box_corner0",
+                "box_corner0",
+                "box_corner0",
+                "box_corner0",
+                "box_corner0",
+                "box_corner0",
+                "box_corner0",
+                "box_corner0",
+                "box_corner0",
+                "box_corner0",
+                "box_corner0",
+                "box_corner0"
+
             ],
             "skeleton": [],
             "supercategory": "box"
