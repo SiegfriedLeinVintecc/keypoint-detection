@@ -1,5 +1,3 @@
-
-
 540x360
     - Unet
         plain model forward pass:                               5514.43us  / iter
@@ -16,6 +14,21 @@
         plain model inference:                                  24200.36us / iter
         torchscript model forward pass:                         18849.65us / iter
         torchscript model forward pass with half precision:     8191.70us  / iter
+512x512
+    - Unet 
+        plain model forward pass:                               7253.41us / iter
+        plain model inference:                                  21175.48us / iter
+        torchscript model forward pass:                         7062.04us / iter
+        torchscript model forward pass with half precision:     5120.59us / iter
+    - Hourglass
+        plain model forward pass:                               14261.80us / iter
+        plain model inference:                                  24629.91us / iter
+        torchscript model forward pass:                         12167.59us / iter
+        torchscript model forward pass with half precision:     9853.69us / iter
+
+640x384
+    - YOLOv8-pose
+        plain model inference:                                   12000us    / iter
 
 640x480
     - MobileNetV3
@@ -28,11 +41,23 @@
         plain model inference:                                  38189.21us / iter
         torchscript model forward pass:                         17475.71us / iter
         torchscript model forward pass with half precision:     12103.67us / iter
-    - Unet
+    - Unet 2 - 3 (n_downsampling_layers - n_resnet_blocks)
         plain model forward pass:                               8852.68us / iter
         plain model inference:                                  23590.82us / iter
         torchscript model forward pass:                         8668.10us / iter
         torchscript model forward pass with half precision:     5286.70us / iter
+    - Unet 2 - 2 (n_downsampling_layers - n_resnet_blocks)
+        plain model forward pass:                               8381.68us / iter
+        plain model inference:                                  20568.42us / iter
+        torchscript model forward pass:                         8140.46us / iter
+        torchscript model forward pass with half precision:     5044.02us / iter
+    - Unet 1 - 1 
+        plain model forward pass:                               7586.58us / iter
+        plain model inference:                                  18756.29us / iter
+        torchscript model forward pass:                         7462.94us / iter
+        torchscript model forward pass with half precision:     4516.06us / iter
+
+
 
 1080x720
     - Unet

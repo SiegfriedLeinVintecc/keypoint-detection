@@ -36,11 +36,12 @@ def overlay_image_with_keypoints(images: torch.Tensor, keypoints: List[torch.Ten
     overlayed_images = []
     for i in range(images.shape[0]):
 
-        heatmaps = generate_channel_heatmap(image_size, keypoints[i], sigma=sigma, device="cpu")  # C x H x W
+        heatmaps = generate_channel_heatmap(image_size, keypoints[i], sigma=sigma, device="cpu", dots=True)  # C x H x W
         heatmaps = heatmaps.unsqueeze(0)  # 1 x C x H x W
         colorized_heatmaps = keypoint_color * heatmaps
         combined_heatmap = torch.max(colorized_heatmaps, dim=1)[0]  # 3 x H x W
         combined_heatmap[combined_heatmap < 0.1] = 0.0  # avoid glare
+        combined_heatmap[combined_heatmap >= 0.1] = 1.0 # make solid dots
 
         overlayed_image = images[i] * alpha + combined_heatmap
         overlayed_image = torch.clip(overlayed_image, 0.0, 1.0)

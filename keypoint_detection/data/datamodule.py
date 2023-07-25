@@ -102,7 +102,7 @@ class KeypointsDataModule(pl.LightningDataModule):
                     A.ColorJitter(),
                     A.RandomRotate90(),
                     A.HorizontalFlip(),
-                    A.RandomResizedCrop(img_height, img_width, scale=(0.8, 1.0), ratio=(0.95, 1.0)),
+                    # A.RandomResizedCrop(img_height, img_width, scale=(0.8, 1.0), ratio=(0.95, 1.0)),
                 ]
             )
             if isinstance(self.train_dataset, COCOKeypointsDataset):

@@ -38,11 +38,11 @@ if __name__ == "__main__":
     from keypoint_detection.models.detector import KeypointDetector
 
     device = "cuda:0"
-    backbone = "Unet"
-    input_width = 256
-    input_height = 256
+    backbone = "Hourglass"
+    input_width = 512
+    input_height = 512
 
-    backbone = BackboneFactory.create_backbone(backbone)
+    backbone = BackboneFactory.create_backbone(backbone, n_hourglasses = 2)
     model = KeypointDetector(1, "2 4", 3, 4e-4, backbone, [["keypoint"]], 1, 1, 0.0, 20)
     # do not forget to set model to eval mode!
     # this will e.g. use the running statistics for batch norm layers instead of the batch statistics.

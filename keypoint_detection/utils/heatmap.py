@@ -14,6 +14,9 @@ def BCE_loss(input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         + (1 - target) * torch.clip(torch.log(1 - input + 1e-10), -100, 100)
     ).mean()
 
+def MSE_loss(input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    "MSE loss using the torch function"
+    return torch.nn.MSELoss(input, target)
 
 def create_heatmap_batch(
     shape: Tuple[int, int], keypoints: List[torch.Tensor], sigma: float, device: torch.device
@@ -34,7 +37,7 @@ def create_heatmap_batch(
 
 
 def generate_channel_heatmap(
-    image_size: Tuple[int, int], keypoints: torch.Tensor, sigma: float, device: torch.device
+    image_size: Tuple[int, int], keypoints: torch.Tensor, sigma: float, device: torch.device, dots: bool = False
 ) -> torch.Tensor:
     """
     Generates heatmap with gaussian blobs for each keypoint, using the given sigma.
@@ -69,6 +72,14 @@ def generate_channel_heatmap(
     u_grid = u_grid.unsqueeze(0) - keypoints[..., 0].unsqueeze(-1).unsqueeze(-1)
     v_grid = v_grid.unsqueeze(0) - keypoints[..., 1].unsqueeze(-1).unsqueeze(-1)
 
+    if dots:
+        # Create solid dots around the centered 2D grids
+        heatmap = torch.exp(
+            -0.5 * (torch.square(u_grid) + torch.square(v_grid)) / torch.square(torch.tensor([2], device=device)) # 2 instead of sigma
+        )
+        heatmap = torch.max(heatmap, dim=0)[0]
+        
+        return heatmap
     ## create gaussian around the centered 2D grids $ exp ( -0.5 (x**2 + y**2) / sigma**2)$
     heatmap = torch.exp(
         -0.5 * (torch.square(u_grid) + torch.square(v_grid)) / torch.square(torch.tensor([sigma], device=device))

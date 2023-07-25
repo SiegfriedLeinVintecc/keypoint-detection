@@ -6,7 +6,7 @@ from torchvision.transforms.functional import to_tensor
 
 from keypoint_detection.utils.heatmap import get_keypoints_from_heatmap
 from keypoint_detection.utils.load_checkpoints import get_model_from_wandb_checkpoint
-
+import time
 
 def local_inference(model, image: np.ndarray, device="cuda"):
     """inference on a single image as if you would load the image from disk or get it from a camera.
@@ -51,8 +51,8 @@ if __name__ == "__main__":
     """
     #checkpoint_name: str e.g. 'airo-box-manipulation/iros2022_0/model-17tyvqfk:v3'
 
-    checkpoint_name = "vintecc-siegfried-lein/keypoint-detector-agriplanter/model-0ellyw1s:v7"
-    folder_path = "../../../projects/Agriplanter/AGP_PPS/data/dataset/MEURILLION/22_03_24__18_36_58_911575/"
+    checkpoint_name = "vintecc-siegfried-lein/keypoint-detector-agriplanter/model-t4rajt6g:v16"
+    folder_path = "../../../../projects/Agriplanter/AGP_PPS/data/dataset_512x512/MEURILLION/22_03_24__19_21_00_746932"
 
     # load a wandb checkpoint
     model = get_model_from_wandb_checkpoint(checkpoint_name)
@@ -70,10 +70,16 @@ if __name__ == "__main__":
     # format will be the same though:
     #  (height, width, channels) ints in range [0,255]
     # beware of the color channels order, it should be RGBD.
+    inference_time = 0
     for image_path in pathlib.Path(folder_path).iterdir():
         if image_path.is_file() and image_path.suffix == ".png":
             image_path = pathlib.Path(image_path)
             image = io.imread(image_path)
 
+            start_time = time.time()
             keypoints = local_inference(model, image)
+            end_time = time.time()
+            print("inference time:", end_time - start_time)
+            inference_time = inference_time + (end_time - start_time)
             print(keypoints)
+    print("time: ", inference_time)
