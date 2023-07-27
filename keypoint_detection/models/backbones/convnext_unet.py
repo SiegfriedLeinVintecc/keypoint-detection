@@ -71,8 +71,8 @@ class ConvNeXtUnet(Backbone):
     def __init__(self, **kwargs):
         super().__init__()
         # todo: make desired convnext encoder configurable
-        self.encoder = timm.create_model("convnext_femto", features_only=True, pretrained=True)
-
+        self.encoder = timm.create_model("convnext_nano", features_only=True, pretrained=True)
+        
         self.decoder_blocks = nn.ModuleList()
         for i in range(1, 4):
             channels_in, skip_channels_in = (
@@ -88,7 +88,6 @@ class ConvNeXtUnet(Backbone):
 
     def forward(self, x):
         features = self.encoder(x)
-
         x = features.pop()
         for block in self.decoder_blocks:
             x = block(x, features.pop())
@@ -97,3 +96,10 @@ class ConvNeXtUnet(Backbone):
 
     def get_n_channels_out(self):
         return self.encoder.feature_info.info[0]["num_chs"]
+
+
+# sizes
+# x             torch.Size([4, 3, 512, 512])
+# features      torch.Size([4, 384, 16, 16])
+# blocks        torch.Size([4, 48, 128, 128])
+# out           torch.Size([4, 48, 512, 512])

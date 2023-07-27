@@ -1,4 +1,20 @@
+
 <h1 align="center">Pytorch Keypoint Detection</h1>
+
+This repo is a fork from the [keypoint detection repository by Thomas Lips](https://github.com/tlpss/keypoint-detection). I used this to try the different pre-made backbones using different hyperparameters on the dataset by Vintecc. I further added backbones and changed code were needed.
+
+To install and for other information, I leave the readme from Thomas' repository.
+
+<h1></h1>
+
+
+
+
+
+
+
+
+
 
 This repo contains a Python package for 2D keypoint detection using [Pytorch Lightning](https://pytorch-lightning.readthedocs.io/en/latest/) and [wandb](https://docs.wandb.ai/). Keypoints are trained using Gaussian Heatmaps, as in [Jakab et Al.](https://proceedings.neurips.cc/paper/2018/hash/1f36c15d6a3d18d52e8d493bc8187cb9-Abstract.html) or [Centernet](https://github.com/xingyizhou/CenterNet).
 
@@ -68,9 +84,3 @@ For benchmarking the inference (or training), see `scripts/benchmark.py`.
 
 ## Note on performance
 - Keep in mind that the Average Precision is a very expensive operation, it can easily take as long to calculate the AP of a .1 data split as it takes to train on the remaining 90% of the data. Therefore it makes sense to use the metric sparsely. The AP will always be calculated at the final epoch, so for optimal train performance (w/o intermediate feedback), you can e.g. set the `ap_epoch_start` parameter to your max number of epochs + 1.
-
-## Rationale:
-TODO
-- why this repo?
-  - why not label keypoints as bboxes and use YOLO/Detectron2?
-  - ..

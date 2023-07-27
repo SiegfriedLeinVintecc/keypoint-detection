@@ -20,11 +20,11 @@
         plain model inference:                                  21175.48us / iter
         torchscript model forward pass:                         7062.04us / iter
         torchscript model forward pass with half precision:     5120.59us / iter
-    - Hourglass
-        plain model forward pass:                               14261.80us / iter
-        plain model inference:                                  24629.91us / iter
-        torchscript model forward pass:                         12167.59us / iter
-        torchscript model forward pass with half precision:     9853.69us / iter
+    - Hourglass-2-3
+        plain model forward pass:                               15057.35us / iter
+        plain model inference:                                  25930.66us / iter
+        torchscript model forward pass:                         15348.59us / iter
+        torchscript model forward pass with half precision:     7966.61us / iter
 
 640x384
     - YOLOv8-pose
