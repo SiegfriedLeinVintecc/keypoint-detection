@@ -76,6 +76,18 @@ class KeypointDetector(pl.LightningModule):
             type=int,
             help="the maximum number of keypoints to predict from the generated heatmaps. If set to -1, skimage will look for all peaks in the heatmap, if set to N (N>0) it will return the N most most certain ones.",
         )
+        parser.add_argument(
+            "--loss_function",
+            default="BCE",
+            type=str,
+            help="the loss function used to train the model. Choice out of: ""BCE"", ""MSE"", ""SmoothL1"" ",
+        )
+        parser.add_argument(
+            "--variable_heatmap_sigma",
+            default=False,
+            type=bool,
+            help="Heatmap sigma will lower after some epoch so model can get more precise, recommended for tanh()",
+        )
         return parent_parser
 
     def __init__(
@@ -90,6 +102,8 @@ class KeypointDetector(pl.LightningModule):
         ap_epoch_freq: int,
         lr_scheduler_relative_threshold: float,
         max_keypoints: int,
+        loss_function: str,
+        variable_heatmap_sigma: bool,
         **kwargs,
     ):
         # """[summary]
@@ -118,6 +132,13 @@ class KeypointDetector(pl.LightningModule):
         self.lr_scheduler_relative_threshold = lr_scheduler_relative_threshold
         self.max_keypoints = max_keypoints
         self.keypoint_channel_configuration = keypoint_channel_configuration
+        self.loss_function = loss_function
+        self.variable_heatmap_sigma = variable_heatmap_sigma
+        self.loss = None
+        if self.loss_function == "MSE":
+            self.loss = nn.MSELoss()
+        else:
+            self.loss = nn.SmoothL1Loss()
         # parse the gt pixel distances
         if isinstance(maximal_gt_keypoint_pixel_distances, str):
             maximal_gt_keypoint_pixel_distances = [
@@ -218,25 +239,46 @@ class KeypointDetector(pl.LightningModule):
 
         ## predict and compute losses
         predicted_unnormalized_maps = self.forward_unnormalized(input_images)
-        predicted_heatmaps = torch.sigmoid(predicted_unnormalized_maps)
+        predicted_heatmaps = torch.sigmoid(predicted_unnormalized_maps) # what about softmax? sfd? tanh? # originally torch.sigmoid
         channel_losses = []
         channel_gt_losses = []
 
         result_dict = {}
-        for channel_idx in range(len(self.keypoint_channel_configuration)):
-            channel_losses.append(
-                # combines sigmoid with BCE for increased stability.
-                nn.functional.binary_cross_entropy_with_logits(
-                    predicted_unnormalized_maps[:, channel_idx, :, :], gt_heatmaps[channel_idx]
-                )
-            )
-            with torch.no_grad():
-                channel_gt_losses.append(BCE_loss(gt_heatmaps[channel_idx], gt_heatmaps[channel_idx]))
 
-            # pass losses and other info to result dict
-            result_dict.update(
-                {f"{self.keypoint_channel_configuration[channel_idx]}_loss": channel_losses[channel_idx].detach()}
-            )
+        if self.variable_heatmap_sigma:
+            # shrink the heatmap sigma so model gets more precise
+            if self.current_epoch > 6 and self.current_epoch%2 == 2 and self.heatmap_sigma-0.2 > 1.5 and batch_idx==0:
+                self.heatmap_sigma = self.heatmap_sigma - 0.1
+            result_dict.update({"heatmap_sigma": float(self.heatmap_sigma)})
+
+        if self.loss_function == "BCE":
+            for channel_idx in range(len(self.keypoint_channel_configuration)):
+                channel_losses.append(
+                    nn.functional.binary_cross_entropy_with_logits(
+                        predicted_unnormalized_maps[:, channel_idx, :, :], gt_heatmaps[channel_idx]
+                    )
+                )
+                with torch.no_grad():
+                    channel_gt_losses.append(BCE_loss(gt_heatmaps[channel_idx], gt_heatmaps[channel_idx]))
+
+                # pass losses and other info to result dict
+                result_dict.update(
+                    {f"{self.keypoint_channel_configuration[channel_idx]}_loss": channel_losses[channel_idx].detach()}
+                )
+        else:
+            for channel_idx in range(len(self.keypoint_channel_configuration)):
+                channel_losses.append(
+                    self.loss(
+                        predicted_heatmaps[:, channel_idx, :, :], gt_heatmaps[channel_idx]
+                    )
+                )
+                with torch.no_grad():
+                    channel_gt_losses.append(self.loss(gt_heatmaps[channel_idx], gt_heatmaps[channel_idx]))
+
+                # pass losses and other info to result dict
+                result_dict.update(
+                    {f"{self.keypoint_channel_configuration[channel_idx]}_loss": channel_losses[channel_idx].detach()}
+                )
 
         loss = sum(channel_losses)
         gt_loss = sum(channel_gt_losses)
@@ -268,6 +310,7 @@ class KeypointDetector(pl.LightningModule):
         # self.log("train/loss", result_dict["loss"])
         self.log("train/gt_loss", result_dict["gt_loss"])
         self.log("train/loss", result_dict["loss"], on_epoch=True)  # also logs steps?
+        self.log("heatmap_sigma", result_dict["heatmap_sigma"])
         return result_dict
 
     def update_ap_metrics(self, result_dict, ap_metrics):

@@ -26,7 +26,7 @@
     - DilatedCnn
         plain model inference:                                  33,899.31us / iter
     - ConvNeXtUnet - nano
-        plain model inference:                                  44016.01us / iter
+        plain model inference:                                  44,016.01us / iter
     - MaxVitUnet
         plain model inference:                                  60,235.48us / iter
 

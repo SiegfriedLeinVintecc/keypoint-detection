@@ -19,10 +19,10 @@ def add_system_args(parent_parser: ArgumentParser) -> ArgumentParser:
     """
     parser = parent_parser.add_argument_group("System")
     parser.add_argument("--seed", default=2022, help="seed for reproducibility")
-    parser.add_argument("--wandb_project", default="test-project", help="The wandb project to log the results to")
+    parser.add_argument("--wandb_project", default="keypoint-detector-agriplanter", help="The wandb project to log the results to")
     parser.add_argument(
         "--wandb_entity",
-        default="airo-box-manipulation",
+        default="vintecc-siegfried-lein",
         help="The entity name to log the project against, can be simply set to your username if you have no dedicated entity for this project",
     )
     parser.add_argument(

@@ -37,7 +37,8 @@ if __name__ == "__main__":
     import pathlib
 
     from skimage import io
-
+    from keypoint_detection.utils.visualization import overlay_image_with_keypoints
+    import matplotlib.pyplot as plt
     """example for loading models to run inference from a pytorch lightning checkpoint
 
     for faster inference you probably want to consider
@@ -51,9 +52,9 @@ if __name__ == "__main__":
     """
     #checkpoint_name: str e.g. 'airo-box-manipulation/iros2022_0/model-17tyvqfk:v3'
 
-    checkpoint_name = "vintecc-siegfried-lein/keypoint-detector-agriplanter/model-t4rajt6g:v16"
+    checkpoint_name = "vintecc-siegfried-lein/keypoint-detector-agriplanter/model-ajx7pvmv:v14"
     folder_path = "../../../../projects/Agriplanter/AGP_PPS/data/dataset_512x512/MEURILLION/22_03_24__19_21_00_746932"
-
+    
     # load a wandb checkpoint
     model = get_model_from_wandb_checkpoint(checkpoint_name)
     
@@ -71,15 +72,29 @@ if __name__ == "__main__":
     #  (height, width, channels) ints in range [0,255]
     # beware of the color channels order, it should be RGBD.
     inference_time = 0
+    img_save = True
     for image_path in pathlib.Path(folder_path).iterdir():
         if image_path.is_file() and image_path.suffix == ".png":
             image_path = pathlib.Path(image_path)
             image = io.imread(image_path)
 
             start_time = time.time()
+            # inference
             keypoints = local_inference(model, image)
+
             end_time = time.time()
             print("inference time:", end_time - start_time)
             inference_time = inference_time + (end_time - start_time)
-            print(keypoints)
+
+
+            # show image with keypoints
+            if img_save:
+                image = torch.tensor(np.array([image]))/255
+                image = image.permute(0, 3, 1, 2)
+                grid = overlay_image_with_keypoints(image, keypoints, 2)[0]
+                image_numpy = grid.permute(1, 2, 0).numpy()
+                plt.imshow(image_numpy)
+                fname = "/home/siegfriedlein/Documents/Vision.Mono/python/vtc_keypoint/vtc_keypoint/keypoint-detection/keypoint_detection/data/inference/" + str(image_path.name) + "_keypoint.png"
+                plt.savefig(fname)
+
     print("time: ", inference_time)
