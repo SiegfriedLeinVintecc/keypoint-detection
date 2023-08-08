@@ -20,7 +20,7 @@ class KeypointsDataModule(pl.LightningDataModule):
         parser = parent_parser.add_argument_group("KeypointsDatamodule")
         parser.add_argument("--batch_size", default=16, type=int)
         parser.add_argument("--validation_split_ratio", default=0.25, type=float)
-        parser.add_argument("--num_workers", default=4, type=int)
+        parser.add_argument("--num_workers", default=12, type=int)
         parser.add_argument(
             "--json_dataset_path",
             type=str,

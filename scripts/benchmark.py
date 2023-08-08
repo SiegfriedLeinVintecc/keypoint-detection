@@ -37,7 +37,7 @@ if __name__ == "__main__":
     from keypoint_detection.models.backbones.backbone_factory import BackboneFactory
     from keypoint_detection.models.detector import KeypointDetector
 
-    # registered_backbone_classes: List[Backbone] = [Unet, ConvNeXtUnet, MaxVitUnet, S3K, DilatedCnn, MobileNetV3, TestModel, SimpleUnet, MinuteNet, Hourglass]
+    # registered_backbone_classes: List[Backbone] = [Unet, ConvNeXtUnet, MaxVitUnet, S3K, DilatedCnn, MobileNetV3, Hourglass]
     device = "cuda:0"
     backbone = "Hourglass"
     input_width = 512

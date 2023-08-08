@@ -102,8 +102,8 @@ class KeypointDetector(pl.LightningModule):
         ap_epoch_freq: int,
         lr_scheduler_relative_threshold: float,
         max_keypoints: int,
-        loss_function: str,
-        variable_heatmap_sigma: bool,
+        loss_function: str = "BCE",
+        variable_heatmap_sigma: bool = False,
         **kwargs,
     ):
         # """[summary]
@@ -137,6 +137,8 @@ class KeypointDetector(pl.LightningModule):
         self.loss = None
         if self.loss_function == "MSE":
             self.loss = nn.MSELoss()
+        elif self.loss_function == "BCE":
+            self.loss = nn.BCELoss()
         else:
             self.loss = nn.SmoothL1Loss()
         # parse the gt pixel distances
@@ -247,7 +249,7 @@ class KeypointDetector(pl.LightningModule):
 
         if self.variable_heatmap_sigma:
             # shrink the heatmap sigma so model gets more precise
-            if self.current_epoch > 6 and self.current_epoch%2 == 2 and self.heatmap_sigma-0.2 > 1.5 and batch_idx==0:
+            if self.current_epoch > 10 and self.current_epoch%2 == 1 and self.heatmap_sigma-0.1 >= 1 and batch_idx==0:
                 self.heatmap_sigma = self.heatmap_sigma - 0.1
             result_dict.update({"heatmap_sigma": float(self.heatmap_sigma)})
 

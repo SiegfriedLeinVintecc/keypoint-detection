@@ -43,11 +43,11 @@ class HourglassBlock(nn.Module):
         return output
 
 class HourglassModule(nn.Module):
-    def __init__(self, n_channels_in, n_channels, num_hourglass_blocks=3):
+    def __init__(self, n_channels_in, n_channels, n_hg_blocks):
         super(HourglassModule, self).__init__()
-        self.num_hourglass_blocks = num_hourglass_blocks
+        self.n_hg_blocks = n_hg_blocks
         self.initial_conv = nn.Conv2d(n_channels_in, 64, kernel_size=7, stride=2, padding=3)
-        self.hourglass_modules = HourglassBlock(64, 64, num_hourglass_blocks)
+        self.hourglass_modules = HourglassBlock(64, 64, n_hg_blocks)
         self.final_up = nn.Sequential(
             nn.Conv2d(64, n_channels, kernel_size=1),
             nn.UpsamplingBilinear2d(scale_factor=2)
@@ -63,15 +63,15 @@ class HourglassModule(nn.Module):
         return output
 
 class Hourglass(Backbone):
-    def __init__(self, n_channels_in=3, n_channels=32, num_hourglass_blocks=4, n_hourglasses=2, **kwargs):
+    def __init__(self, n_channels_in=3, n_channels=32, n_hg_blocks=5, n_hourglasses=2, **kwargs):
         super(Hourglass, self).__init__()
         self.n_channels = n_channels
-        self.initial_hourglass = self._make_hourglass_module(n_channels_in, n_channels, num_hourglass_blocks)
+        self.initial_hourglass = self._make_hourglass_module(n_channels_in, n_channels, n_hg_blocks)
         self.hourglasses = nn.ModuleList([
-            self._make_hourglass_module(n_channels, n_channels, num_hourglass_blocks) for _ in range(1, n_hourglasses)
+            self._make_hourglass_module(n_channels, n_channels, n_hg_blocks) for _ in range(1, n_hourglasses)
         ])
-    def _make_hourglass_module(self, n_channels_in, n_channels, num_hourglass_blocks):
-        return HourglassModule(n_channels_in=n_channels_in, n_channels=n_channels, num_hourglass_blocks=num_hourglass_blocks)
+    def _make_hourglass_module(self, n_channels_in, n_channels, n_hg_blocks):
+        return HourglassModule(n_channels_in=n_channels_in, n_channels=n_channels, n_hg_blocks=n_hg_blocks)
         
     def forward(self, x):
         x = self.initial_hourglass(x)
@@ -85,17 +85,9 @@ class Hourglass(Backbone):
     @staticmethod
     def add_to_argparse(parent_parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         parser = parent_parser.add_argument_group("HourglassBackbone")
-        parser.add_argument("--n_hourglasses", type=int, default=2)
+        parser.add_argument("--n_hourglasses", type=int, default=1)
         parser.add_argument("--n_hg_blocks", type=int, default=4)
         return parent_parser
 
 if __name__ == "__main__":
     print(Backbone._backbone_registry)
-
-# Params: 
-# n_hourglasses - n_hg_blocks
-# 2 - 4: 2.0 M Params
-
-# sizes:
-
-# --------------------------------

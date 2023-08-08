@@ -9,26 +9,32 @@
 512x512
     - YOLOv8-pose
         plain model inference:                                  10,000.00us / iter
+    - Hourglass-1-4
+        plain model inference:                                  12,872.43us / iter
     - S3K
-        plain model inference:                                  20,062.43us / iter
+        plain model inference:                                  13,875.40us / iter
+    - Unet-3-2
+        plain model inference:                                  15,504.34us / iter
     - Unet
         plain model inference:                                  21,175.48us / iter
     - Hourglass-2-2
-        plain model inference:                                  23,725.61us / iter
+        plain model inference:                                  20,100.85us / iter
     - MobileNetV3
         plain model inference:                                  25,239.42us / iter
     - Hourglass-2-3
-        plain model inference:                                  25,430.66us / iter
+        plain model inference:                                  21,961.56us / iter
     - Hourglass-2-4
-        plain model inference:                                  27,925.54us / iter
+        plain model inference:                                  24,225.54us / iter
     - ConvNextUnet - femto
-        plain model inference:                                  30,240.28us / iter
+        plain model inference:                                  20,058.46us / iter
+    - Hourglass-3-4
+        plain model inference:                                  32,808.47us / iter
     - DilatedCnn
         plain model inference:                                  33,899.31us / iter
     - ConvNeXtUnet - nano
-        plain model inference:                                  44,016.01us / iter
+        plain model inference:                                  41,306.52us / iter
     - MaxVitUnet
-        plain model inference:                                  60,235.48us / iter
+        plain model inference:                                  41,026.67us / iter
 
 640x384
     - YOLOv8-pose

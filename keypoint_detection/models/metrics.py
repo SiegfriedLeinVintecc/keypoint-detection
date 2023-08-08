@@ -97,6 +97,57 @@ def keypoint_classification(
 
     return classified_keypoints
 
+def keypoint_classification_OKS(
+    detected_keypoints: List[DetectedKeypoint],
+    ground_truth_keypoints: List[Keypoint],
+    object_size: float = 11.54,
+    AP_threshold: float = 0.5,
+) -> List[ClassifiedKeypoint]:
+    """Classifies keypoints of a **single** frame in True Positives or False Positives by searching for unused gt keypoints in prediction probability order
+    that are within distance d of the detected keypoint.
+
+    Args:
+        detected_keypoints (List[DetectedKeypoint]): The detected keypoints in the frame
+        ground_truth_keypoints (List[Keypoint]): The ground truth keypoints of a frame
+        threshold_distance: maximal distance in pixel coordinate space between detected keypoint and ground truth keypoint to be considered a TP
+
+    Returns:
+        List[ClassifiedKeypoint]: Keypoints with TP label.
+    """
+    classified_keypoints: List[ClassifiedKeypoint] = []
+
+    ground_truth_keypoints = copy.deepcopy(
+        ground_truth_keypoints
+    )  # make deep copy to do local removals (pass-by-reference..)
+
+    for detected_keypoint in sorted(detected_keypoints, key=lambda x: x.probability, reverse=True):
+        matched = False
+        for gt_keypoint in ground_truth_keypoints:
+            distance = detected_keypoint.l2_distance(gt_keypoint)
+            OKS = math.exp(-(distance*distance/(2*object_size)))
+            if OKS > AP_threshold:
+                classified_keypoint = ClassifiedKeypoint(
+                    detected_keypoint.u,
+                    detected_keypoint.v,
+                    detected_keypoint.probability,
+                    AP_threshold,
+                    True,
+                )
+                matched = True
+                # remove keypoint from gt to avoid muliple matching
+                ground_truth_keypoints.remove(gt_keypoint)
+                break
+        if not matched:
+            classified_keypoint = ClassifiedKeypoint(
+                detected_keypoint.u,
+                detected_keypoint.v,
+                detected_keypoint.probability,
+                AP_threshold,
+                False,
+            )
+        classified_keypoints.append(classified_keypoint)
+
+    return classified_keypoints
 
 def calculate_precision_recall(
     classified_keypoints: List[ClassifiedKeypoint], total_ground_truth_keypoints: int
@@ -185,9 +236,15 @@ class KeypointAPMetric(Metric):
         self.add_state("total_ground_truth_keypoints", default=torch.tensor(0), dist_reduce_fx="sum")
 
     def update(self, detected_keypoints: List[DetectedKeypoint], gt_keypoints: List[Keypoint]):
-
-        classified_img_keypoints = keypoint_classification(
-            detected_keypoints, gt_keypoints, self.keypoint_threshold_distance
+        
+        # Old:
+        # classified_img_keypoints = keypoint_classification(
+        #     detected_keypoints, gt_keypoints, self.keypoint_threshold_distance
+        # )
+        
+        # New: OKS
+        classified_img_keypoints = keypoint_classification_OKS(
+            detected_keypoints, gt_keypoints, AP_threshold = self.keypoint_threshold_distance
         )
 
         self.classified_keypoints += classified_img_keypoints
