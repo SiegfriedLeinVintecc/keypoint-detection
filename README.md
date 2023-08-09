@@ -6,24 +6,26 @@ In this readme a guide to the code structure, models and use will be given.
 To install and for other information, I leave the readme from Thomas' repository.
 
 ## Code structure
-```/keypoint_detection```: The main chunck of the code is found in this folder.
--```/keypoint_detection/data```: contains the code allowing the trainer to load, augment and use (COCO) datasets.
--```/keypoint_detection/models```:
-  - ```/keypoint_detection/models/backones```: contains the backbones and a backbone factory. If you want to add your own backbone: 1. copy a previous backbone file and rename (e.g. backboneExample.py), 2. make sure that your backbone class inherits from 'Backbone' (e.g. ```class backboneExample(Backbone)``` and ```super(backboneExample, self).__init__()``` in the class init. and add the following ```if __name__ == "__main__":
-    print(Backbone._backbone_registry)```, 3. import the class in backbone_factory.py and add to the registered_backbone_classes.
-  - ```/keypoint_detection/models/detector.py```: This file contains the main code that creates a head and a backbone, performs the training, logging and glue code between other modules.
-  - ```/keypoint_detection/models/metrics.py```: contains the code that performs the AP metrics. I added a function ```keypoint_classification_OKS``` which  implements the OKS metric. If you want to use the old metric by Thomas Lips which uses simple euclidean distance to assigen FP and TP, uncomment the old code in the ```update``` function and comment the OKS part.
--```/keypoint_detection/train```: contains ```train.py``` which is the file you want to run (with args) to start training a model. Folder also contains ```utils.py```
--```/keypoint_detection/utils```:
-  - ```/keypoint_detection/utils/heatmap.py```: contains a function that generates a heatmap and a function that gets keypoints from a heatmap.
-  - ```/keypoint_detection/utils/load_checkpoints.py```: code that allows starting training from a checkpoint. Used by ```detector.py``` if a path to a checkpoint is given when running ```train.py```.
-  - ```/keypoint_detection/utils/visualization.py```: code used to visualize predictions, for logging purposes.
+- ```/keypoint_detection```: The main chunck of the code is found in this folder.
 
-```/scripts``` : Scripts for benchmarking, training (e.g. back_to_back), and inference can be found in this folder.
+  - ```/keypoint_detection/data```: contains the code allowing the trainer to load, augment and use (COCO) datasets.
+  
+  - ```/keypoint_detection/models```:
+    - ```/keypoint_detection/models/backones```: contains the backbones and a backbone factory. If you want to add your own backbone: 1. copy a previous backbone file and rename (e.g. backboneExample.py), 2. make sure that your backbone class inherits from 'Backbone' (e.g. ```class backboneExample(Backbone)``` and ```super(backboneExample, self).__init__()``` in the class init. and add the following ```if __name__ == "__main__":
+      print(Backbone._backbone_registry)```, 3. import the class in backbone_factory.py and add to the registered_backbone_classes.
+    - ```/keypoint_detection/models/detector.py```: This file contains the main code that creates a head and a backbone, performs the training, logging and glue code between other modules.
+    - ```/keypoint_detection/models/metrics.py```: contains the code that performs the AP metrics. I added a function ```keypoint_classification_OKS``` which  implements the OKS metric. If you want to use the old metric by Thomas Lips which uses simple euclidean distance to assigen FP and TP, uncomment the old code in the ```update``` function and comment the OKS part.
+  - ```/keypoint_detection/train```: contains ```train.py``` which is the file you want to run (with args) to start training a model. Folder also contains ```utils.py```
+  - ```/keypoint_detection/utils```:
+    - ```/keypoint_detection/utils/heatmap.py```: contains a function that generates a heatmap and a function that gets keypoints from a heatmap.
+    - ```/keypoint_detection/utils/load_checkpoints.py```: code that allows starting training from a checkpoint. Used by ```detector.py``` if a path to a checkpoint is given when running ```train.py```.
+    - ```/keypoint_detection/utils/visualization.py```: code used to visualize predictions, for logging purposes.
 
-```/test```: Contains test files created by Thomas Lips.
+- ```/scripts``` : Scripts for benchmarking, training (e.g. back_to_back), and inference can be found in this folder.
 
-```/labeling```: Contains tools for labeling and conversion of data. I created ```/labeling/scripts/resize_coco_dataset.py``` to resize the resolution of COCO datasets. (To allow faster training)
+- ```/test```: Contains test files created by Thomas Lips.
+
+- ```/labeling```: Contains tools for labeling and conversion of data. I created ```/labeling/scripts/resize_coco_dataset.py``` to resize the resolution of COCO datasets. (To allow faster training)
 
 <h1></h1>
 
