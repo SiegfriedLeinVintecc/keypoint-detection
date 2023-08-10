@@ -3,7 +3,7 @@
 
 This repo is a fork from the [keypoint detection repository by Thomas Lips](https://github.com/tlpss/keypoint-detection). I used this to try the different pre-made backbones using different hyperparameters on the dataset by Vintecc. I further added backbones and changed code were needed.
 In this readme a guide to the code structure, models and use will be given.
-To install and for other information, I leave the readme from Thomas' repository.
+To install and for other information, I leave the readme from Thomas' repository below.
 
 ## Code structure
 - ```/keypoint_detection```: The main chunck of the code is found in this folder.
@@ -53,7 +53,7 @@ This example contains most of the important args that can be used for train.py. 
 - wandb_project & wandb_entity: after logging in with an account that has access to these (run `wandb login`), this will be the project where the results will be logged.
 - json_dataset_path: Location of the train dataset, here asumes 1. this repository is installed in mono/python/vtc_keypoint/vtc_keypoint and 2. dataset is installed in mono/projects/Agriplanter/AGP_PPS/data/dataset
 - json_dataset_img_size: This string is added after data/dataset path, used to easily change which resolution of data to be used (first these datasets needs to be created!). E.g.: ```/data/dataset/train.json``` becomes ```/data/dataset_512x512/train.json``` - batch_size: determines batch_size, to high batch size will result in errors since GPU won't be able to handle it.
-- maximal_gt_keypoint_pixel_distances: values for which the AP score needs to be calculated for, when using OKS ```"0.5 0.55 0.6 0.65 0.70 0.75 0.80 0.85 0.90 0.95"``` is commonly used. For using the old euclidean distance ***"2 4"*** is recommended. - n_channels_in: The number of color channels of the images.
+- maximal_gt_keypoint_pixel_distances: values for which the AP score needs to be calculated for, when using OKS ```"0.5 0.55 0.6 0.65 0.70 0.75 0.80 0.85 0.90 0.95"``` is commonly used. For using the old euclidean distance ```"2 4"``` is recommended. - n_channels_in: The number of color channels of the images.
 - heatmap_sigma: The sigma used for the ground-truth heatmap blobs. Higher sigma results in faster but inprecise training, lower sigma results in slower (or impossible) but precise training)
 - variable_heatmap_sigma: If set to a value lower the heatmap_sigma, the heatmap sigma wil start lowering after the 10th epoch, this allows the model to learn fast and then get more precise allong the way.
 - n_resnet_blocks, n_downsampling_layers: Values to determine U-Net depth
