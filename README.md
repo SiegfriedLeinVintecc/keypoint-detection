@@ -2,8 +2,62 @@
 <h1 align="center">Pytorch Keypoint Detection</h1>
 
 This repo is a fork from the [keypoint detection repository by Thomas Lips](https://github.com/tlpss/keypoint-detection). I used this to try the different pre-made backbones using different hyperparameters on the dataset by Vintecc. I further added backbones and changed code were needed.
+In this readme a guide to the code structure, models and use will be given.
+To install and for other information, I leave the readme from Thomas' repository below.
 
-To install and for other information, I leave the readme from Thomas' repository.
+## Code structure
+- ```/keypoint_detection```: The main chunck of the code is found in this folder.
+
+  - ```/keypoint_detection/data```: contains the code allowing the trainer to load, augment and use (COCO) datasets.
+  
+  - ```/keypoint_detection/models```:
+    - ```/keypoint_detection/models/backones```: contains the backbones and a backbone factory. If you want to add your own backbone: 1. copy a previous backbone file and rename (e.g. backboneExample.py), 2. make sure that your backbone class inherits from 'Backbone' (e.g. ```class backboneExample(Backbone)``` and ```super(backboneExample, self).__init__()``` in the class init. and add the following ```if __name__ == "__main__":
+      print(Backbone._backbone_registry)```, 3. import the class in backbone_factory.py and add to the registered_backbone_classes.
+    - ```/keypoint_detection/models/detector.py```: This file contains the main code that creates a head and a backbone, performs the training, logging and glue code between other modules.
+    - ```/keypoint_detection/models/metrics.py```: contains the code that performs the AP metrics. I added a function ```keypoint_classification_OKS``` which  implements the OKS metric. If you want to use the old metric by Thomas Lips which uses simple euclidean distance to assigen FP and TP, uncomment the old code in the ```update``` function and comment the OKS part.
+  - ```/keypoint_detection/train```: contains ```train.py``` which is the file you want to run (with args) to start training a model. Folder also contains ```utils.py```
+  - ```/keypoint_detection/utils```:
+    - ```/keypoint_detection/utils/heatmap.py```: contains a function that generates a heatmap and a function that gets keypoints from a heatmap.
+    - ```/keypoint_detection/utils/load_checkpoints.py```: code that allows starting training from a checkpoint. Used by ```detector.py``` if a path to a checkpoint is given when running ```train.py```.
+    - ```/keypoint_detection/utils/visualization.py```: code used to visualize predictions, for logging purposes.
+
+- ```/scripts``` : Scripts for benchmarking, training (e.g. back_to_back), and inference can be found in this folder.
+
+- ```/test```: Contains test files created by Thomas Lips.
+
+- ```/labeling```: Contains tools for labeling and conversion of data. I created ```/labeling/scripts/resize_coco_dataset.py``` to resize the resolution of COCO datasets. (To allow faster training)
+
+## Models
+
+## How to train
+To start training, first follow the installation instructions by Thomas Lips below. Then make sure that you've activated your environment by using ```conda activate keypoint-detection```. After this create a ```.sh``` file, e.g. in the ```/scripts``` folder. Bellow is an example train script that, when created, can be used by running ```keypoint-detection$ bash scripts/train.sh```.
+
+```bash
+#!/bin/bash
+python keypoint_detection/train/train.py\
+--keypoint_channel_configuration "keypoint" \
+--wandb_project "keypoint-detector-agriplanter-OKS" --wandb_entity "vintecc-siegfried-lein" \
+--json_dataset_path "../../../../projects/Agriplanter/AGP_PPS/data/dataset/train.json" --json_validation_dataset_path "../../../../projects/Agriplanter/AGP_PPS/data/dataset/val.json" \
+--json_dataset_img_size "512x512" --batch_size 4 --seed 2023 \
+--max_epochs 40 --early_stopping_relative_threshold 0.0001 --log_every_n_steps 1 --accelerator="gpu" --devices 1 --precision 16 \
+--backbone_type "MaxVitUnet" --learning_rate 0.0004 --maximal_gt_keypoint_pixel_distances "0.5 0.55 0.6 0.65 0.70 0.75 0.80 0.85 0.90 0.95" --ap_epoch_freq 2 \
+--auto_1r_find True --fast_dev_run False --n_channels_in 3 --heatmap_sigma 2 --variable_heatmap_sigma 2 \
+--n_resnet_blocks 3 --n_downsampling_layers 2 --n_hourglasses 1 --n_hg_blocks 4 --augment_train --loss_function "BCE"
+```
+This example contains most of the important args that can be used for train.py. Now follows a comprehensive description and notes for some of these arguments. For a complete overview run ```python train/train.py -h```.
+- keypoint_channel_configuration: A list of keypoint that need to be learned, channels seperated by a ```;``` and categories within a channel with a ```=```. Best understood by some examples:
+  - face: ```"left_eye; right_eye; nose; mouth"``` (eyes can be differentiated from eachother)
+  - plant: ```"stem; leaf0= leaf1 = leaf2"``` (leafs can't be differentiated from eachother, but need to detected, thus use same (heatmap) channel but 3 categories)
+  - cardboard box: ```"box_corner0 = box_corner1 = box_corner2 = box_corner3; flap_corner; flap_corner2"``` (box corners can't be differentiated from eachother)
+  - something with only 1 keypoint: ```"keypoint"```
+- wandb_project & wandb_entity: after logging in with an account that has access to these (run `wandb login`), this will be the project where the results will be logged.
+- json_dataset_path: Location of the train dataset, here asumes 1. this repository is installed in mono/python/vtc_keypoint/vtc_keypoint and 2. dataset is installed in mono/projects/Agriplanter/AGP_PPS/data/dataset
+- json_dataset_img_size: This string is added after data/dataset path, used to easily change which resolution of data to be used (first these datasets needs to be created!). E.g.: ```/data/dataset/train.json``` becomes ```/data/dataset_512x512/train.json``` - batch_size: determines batch_size, to high batch size will result in errors since GPU won't be able to handle it.
+- maximal_gt_keypoint_pixel_distances: values for which the AP score needs to be calculated for, when using OKS ```"0.5 0.55 0.6 0.65 0.70 0.75 0.80 0.85 0.90 0.95"``` is commonly used. For using the old euclidean distance ```"2 4"``` is recommended. - n_channels_in: The number of color channels of the images.
+- heatmap_sigma: The sigma used for the ground-truth heatmap blobs. Higher sigma results in faster but inprecise training, lower sigma results in slower (or impossible) but precise training)
+- variable_heatmap_sigma: If set to a value lower the heatmap_sigma, the heatmap sigma wil start lowering after the 10th epoch, this allows the model to learn fast and then get more precise allong the way.
+- n_resnet_blocks, n_downsampling_layers: Values to determine U-Net depth
+- n_hourglasses, n_hg_blocks : Values to determine number of stacked hourglasses and depth of the hourglasses.
 
 <h1></h1>
 
@@ -15,6 +69,7 @@ To install and for other information, I leave the readme from Thomas' repository
 
 
 
+<h1 align="center">Thomas Lips Pytorch Keypoint Detection</h1>
 
 This repo contains a Python package for 2D keypoint detection using [Pytorch Lightning](https://pytorch-lightning.readthedocs.io/en/latest/) and [wandb](https://docs.wandb.ai/). Keypoints are trained using Gaussian Heatmaps, as in [Jakab et Al.](https://proceedings.neurips.cc/paper/2018/hash/1f36c15d6a3d18d52e8d493bc8187cb9-Abstract.html) or [Centernet](https://github.com/xingyizhou/CenterNet).
 
