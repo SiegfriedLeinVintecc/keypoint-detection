@@ -63,7 +63,7 @@ class HourglassModule(nn.Module):
         return output
 
 class Hourglass(Backbone):
-    def __init__(self, n_channels_in=3, n_channels=32, n_hg_blocks=5, n_hourglasses=2, **kwargs):
+    def __init__(self, n_channels_in=3, n_channels=32, n_hg_blocks=4, n_hourglasses=2, **kwargs):
         super(Hourglass, self).__init__()
         self.n_channels = n_channels
         self.initial_hourglass = self._make_hourglass_module(n_channels_in, n_channels, n_hg_blocks)

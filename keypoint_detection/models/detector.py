@@ -84,9 +84,9 @@ class KeypointDetector(pl.LightningModule):
         )
         parser.add_argument(
             "--variable_heatmap_sigma",
-            default=False,
-            type=bool,
-            help="Heatmap sigma will lower after some epoch so model can get more precise, recommended for tanh()",
+            default=2.0,
+            type=float,
+            help="Heatmap sigma will lower after some epoch so model can get more precise, slowly lowering to this value. This is recommended when using activation function tanh()",
         )
         return parent_parser
 
@@ -102,8 +102,8 @@ class KeypointDetector(pl.LightningModule):
         ap_epoch_freq: int,
         lr_scheduler_relative_threshold: float,
         max_keypoints: int,
+        variable_heatmap_sigma: float,
         loss_function: str = "BCE",
-        variable_heatmap_sigma: bool = False,
         **kwargs,
     ):
         # """[summary]
@@ -247,9 +247,9 @@ class KeypointDetector(pl.LightningModule):
 
         result_dict = {}
 
-        if self.variable_heatmap_sigma:
+        if self.variable_heatmap_sigma < self.heatmap_sigma:
             # shrink the heatmap sigma so model gets more precise
-            if self.current_epoch > 10 and self.current_epoch%2 == 1 and self.heatmap_sigma-0.1 >= 1 and batch_idx==0:
+            if self.current_epoch > 8 and self.current_epoch%2 == 1 and self.heatmap_sigma-0.1 >= self.variable_heatmap_sigma and batch_idx==0:
                 self.heatmap_sigma = self.heatmap_sigma - 0.1
             result_dict.update({"heatmap_sigma": float(self.heatmap_sigma)})
 

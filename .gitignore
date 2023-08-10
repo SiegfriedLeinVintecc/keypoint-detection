@@ -12,3 +12,4 @@ lightning_logs**
 **.ckpt
 
 **/checkpoints/
+scripts/test.ipynb

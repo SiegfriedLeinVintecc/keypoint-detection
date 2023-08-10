@@ -71,7 +71,7 @@ class ConvNeXtUnet(Backbone):
     def __init__(self, **kwargs):
         super().__init__()
         # todo: make desired convnext encoder configurable
-        self.encoder = timm.create_model("convnext_femto", features_only=True, pretrained=True)
+        self.encoder = timm.create_model("convnext_nano", features_only=True, pretrained=True)
         
         self.decoder_blocks = nn.ModuleList()
         for i in range(1, 4):

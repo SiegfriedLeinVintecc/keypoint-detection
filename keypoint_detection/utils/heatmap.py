@@ -14,10 +14,6 @@ def BCE_loss(input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         + (1 - target) * torch.clip(torch.log(1 - input + 1e-10), -100, 100)
     ).mean()
 
-def MSE_loss(input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-    "MSE loss using the torch function"
-    return torch.nn.MSELoss(input, target)
-
 def create_heatmap_batch(
     shape: Tuple[int, int], keypoints: List[torch.Tensor], sigma: float, device: torch.device
 ) -> torch.Tensor:

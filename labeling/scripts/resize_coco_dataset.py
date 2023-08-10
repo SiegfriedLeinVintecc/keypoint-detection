@@ -98,11 +98,10 @@ if __name__ == "__main__":
     """
     example usage:
 
-    python crop_coco_dataset.py datasets/towel_testset_0 256 256
+    python resize_coco_dataset.py datasets/towel_testset_0 256 256
 
     This will create a new dataset called towel_testset_0_256x256 in the same directory as the old one.
     The old dataset will be unaltered.
-    Currently only square outputs are supported.
     """
 
     parser = ArgumentParser()
