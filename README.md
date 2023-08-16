@@ -58,7 +58,8 @@ This example contains most of the important args that can be used for train.py. 
 - variable_heatmap_sigma: If set to a value lower the heatmap_sigma, the heatmap sigma wil start lowering after the 10th epoch, this allows the model to learn fast and then get more precise allong the way.
 - n_resnet_blocks, n_downsampling_layers: Values to determine U-Net depth
 - n_hourglasses, n_hg_blocks : Values to determine number of stacked hourglasses and depth of the hourglasses.
-
+- augment_train: If added it will train with image augmentations (rotation, color, flip)
+- loss_function: Determines the function used to calculate loss, choose between BCE, MSE, SmoothL1
 <h1></h1>
 
 
