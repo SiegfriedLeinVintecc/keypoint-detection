@@ -28,6 +28,48 @@ To install and for other information, I leave the readme from Thomas' repository
 - ```/labeling```: Contains tools for labeling and conversion of data. I created ```/labeling/scripts/resize_coco_dataset.py``` to resize the resolution of COCO datasets. (To allow faster training)
 
 ## Models
+Results from experiments:
+
+**Model (BCE)**
+
+| Model            | mAP    | AP50   | AP75   | Parameters (M) | Inference (ms) | FPS     |
+|------------------|--------|--------|--------|----------------|----------------|---------|
+| MaxVitUnet       | 0.2981 | 0.4827 | 0.2856 | 16.8           | 41.027         | 24.374  |
+| ConvNeXt-nano    | 0.287  | 0.4802 | 0.2708 | 17.7           | 41.306         | 24.210  |
+| Hourglass-2-5    | 0.2769 | 0.4496 | 0.257  | 28.9           | 26.739         | 37.399  |
+| ConvNeXt-femto   | 0.2763 | 0.4673 | 0.2631 | 5.8            | 20.702         | 48.305  |
+| Hourglass-4-2    | 0.2722 | 0.3951 | 0.2423 | 1.4            | 35.997         | 27.780  |
+| Hourglass-2-4    | 0.2705 | 0.4412 | 0.2466 | 7.4            | 24.131         | 41.440  |
+| Hourglass-1-4    | 0.2595 | 0.4305 | 0.2499 | 3.6            | 14.428         | 69.310  |
+| MobileNetV3      | 0.254  | 0.4339 | 0.2384 | 3.4            | 16.629         | 60.136  |
+| Unet-4-2         | 0.2295 | 0.4145 | 0.2078 | 0.13           | 14.429         | 69.305  |
+| DilatedCnn       | 0.2254 | 0.3969 | 0.2054 | 0.102          | 31.425         | 31.822  |
+| S3K              | 0.2201 | 0.3968 | 0.1986 | 0.113          | 13.875         | 72.072  |
+| Unet-3-2         | 0.22   | 0.3804 | 0.2019 | 0.112          | 13.911         | 71.886  |
+
+**Model (MSE)**
+
+| Model            | mAP    | AP50   | AP75   | Parameters (M) | Inference (ms) | FPS     |
+|------------------|--------|--------|--------|----------------|----------------|---------|
+| MaxVitUnet       | 0.3033 | 0.4803 | 0.2912 | 16.8           | 41.027         | 24.374  |
+| ConvNeXt-nano    | 0.2807 | 0.4461 | 0.2428 | 17.7           | 41.306         | 24.210  |
+| MobileNetV3      | 0.274  | 0.4476 | 0.263  | 3.4            | 16.629         | 60.136  |
+| ConvNeXt-femto   | 0.2702 | 0.441  | 0.2536 | 5.8            | 20.702         | 48.305  |
+| Hourglass-1-4    | 0.2698 | 0.4448 | 0.2553 | 3.6            | 14.428         | 69.310  |
+| Unet-4-2         | 0.2592 | 0.4177 | 0.2485 | 0.13           | 14.429         | 69.305  |
+| S3K              | 0.2466 | 0.3969 | 0.2336 | 0.113          | 13.875         | 72.072  |
+| Unet-3-2         | 0.2396 | 0.4023 | 0.2252 | 0.112          | 13.911         | 71.886  |
+
+**Model (SmoothL1)**
+
+| Model            | mAP    | AP50   | AP75   | Parameters (M) | Inference (ms) | FPS     |
+|------------------|--------|--------|--------|----------------|----------------|---------|
+| MaxVitUnet       | 0.2981 | 0.4735 | 0.2891 | 16.8           | 41.027         | 24.374  |
+| ConvNeXt-nano    | 0.2753 | 0.4199 | 0.2476 | 17.7           | 41.306         | 24.210  |
+| MobileNetV3      | 0.2718 | 0.4483 | 0.2562 | 3.4            | 16.629         | 60.136  |
+| Unet-4-2         | 0.2622 | 0.4337 | 0.2503 | 0.13           | 14.429         | 69.305  |
+| Hourglass-1-4    | 0.2538 | 0.4189 | 0.2395 | 0.112          | 13.911         | 71.886  |
+| S3K              | 0.2407 | 0.3937 | 0.2255 | 0.113          | 13.875         | 72.072  |
 
 ## How to train
 To start training, first follow the installation instructions by Thomas Lips below. Then make sure that you've activated your environment by using ```conda activate keypoint-detection```. After this create a ```.sh``` file, e.g. in the ```/scripts``` folder. Bellow is an example train script that, when created, can be used by running ```keypoint-detection$ bash scripts/train.sh```.
