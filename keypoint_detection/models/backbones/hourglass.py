@@ -34,10 +34,8 @@ class HourglassBlock(nn.Module):
 
     def forward(self, x):
         downsampled = self.downsample(x)
-        # print("down ", downsampled.size())
         hourglassed = self.hourglassblock(downsampled)
         upsampled = self.upsample(hourglassed)
-        # print("up ", upsampled.size())
         skip = self.skip_conv(x)
         output = upsampled + skip
         return output
@@ -54,12 +52,9 @@ class HourglassModule(nn.Module):
         )
 
     def forward(self, x):
-        # print("x ", x.size())
         x = self.initial_conv(x)
-        # print("initial ", x.size())
         x = self.hourglass_modules(x)
         output = self.final_up(x)
-        # print("output ", output.size())
         return output
 
 class Hourglass(Backbone):
