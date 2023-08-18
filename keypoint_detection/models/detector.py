@@ -253,6 +253,7 @@ class KeypointDetector(pl.LightningModule):
                 self.heatmap_sigma = self.heatmap_sigma - 0.1
             result_dict.update({"heatmap_sigma": float(self.heatmap_sigma)})
 
+        # BCE is special because binary_cross_entropy_with_logits
         if self.loss_function == "BCE":
             for channel_idx in range(len(self.keypoint_channel_configuration)):
                 channel_losses.append(
@@ -267,6 +268,7 @@ class KeypointDetector(pl.LightningModule):
                 result_dict.update(
                     {f"{self.keypoint_channel_configuration[channel_idx]}_loss": channel_losses[channel_idx].detach()}
                 )
+        # MSE, SmoothL1 and others here
         else:
             for channel_idx in range(len(self.keypoint_channel_configuration)):
                 channel_losses.append(
